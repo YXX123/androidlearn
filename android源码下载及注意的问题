@@ -1,0 +1,25 @@
+创建和使用本地Android源码镜像
+创建镜像
+按照官网下载指南Using a local mirror的第一部分将镜像同步到本地，去除所有文件和目录的写权限 
+按照这个指南安装并设置Git Server 
+sv stop git-daemon 
+sv start git-daemon # 我不知道这个可不可以，我当时是直接执行 /etc/sv/git-daemon/run 的 
+以上就可以使得这个镜像可以对非本地机器提供服务。
+使用镜像
+做完官网下载指南Installing Repo部分的操作 
+修改 ~/bin/repo，将
+REPO_URL = 'https://gerrit.googlesource.com/git-repo'
+改为
+#REPO_URL = 'https://gerrit.googlesource.com/git-repo'
+REPO_URL = 'git://<镜像服务器IP>/git-repo.git'
+按照官网下载指南Initializing a Repo client部分进行操作，需要将
+https://android.googlesource.com/platform/manifest
+替换为
+git://<镜像服务器IP>/platform/manifest
+repo sync -j4 # -j后面的数字4表示开启4线程进行同步 
+
+指令如下：
+找一个干净的文件夹，
+./repo init -u git://IP/platform/manifest 完成repo文件的初始化
+然后调用
+./repo sync -j4进行下载
